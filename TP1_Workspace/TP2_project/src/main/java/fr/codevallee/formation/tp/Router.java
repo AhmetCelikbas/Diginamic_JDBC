@@ -33,13 +33,14 @@ public class Router implements SparkApplication {
 			Map<String, Object> attributes = new HashMap<>();
 
 			// Exemple 1 (à déplacer dans une classe statique !):
-			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("formation");
+			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("immobilier");
 			EntityManager entityManager = entityManagerFactory.createEntityManager();
 
 			// J'ajoute un métier :
 			Demo metier = new Demo();
 			metier.setNom("exemple1");
 
+			
 			entityManager.getTransaction().begin();
 			entityManager.persist(metier);
 			entityManager.getTransaction().commit();
