@@ -1,15 +1,15 @@
 package fr.codevallee.formation.tp;
 
 import static spark.Spark.get;
+import static spark.Spark.post;
+import static spark.Spark.put;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import fr.codevallee.formation.tp.modele.Demo;
+
+import fr.codevallee.formation.tp.modele.Utilisateur;
 import freemarker.template.Configuration;
 import freemarker.template.Version;
 import spark.ModelAndView;
@@ -24,31 +24,113 @@ public class Router implements SparkApplication {
 	public void init() {
 
 		final Logger logger = LoggerFactory.getLogger(Router.class);
-
 		
-		get("/exemple1", (request, response) -> {
-
+		/*
+		 * LIST USERS
+		 */
+		get("/", (request, response) -> {
 			logger.debug("start");
-
 			Map<String, Object> attributes = new HashMap<>();
-
-			// Exemple 1 (à déplacer dans une classe statique !):
-			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("immobilier");
-			EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-			// J'ajoute un métier :
-			Demo metier = new Demo();
-			metier.setNom("exemple1");
-
+			Utilisateur utilisateur = new Utilisateur();
 			
-			entityManager.getTransaction().begin();
-			entityManager.persist(metier);
-			entityManager.getTransaction().commit();
-			entityManager.close();
-
-			return new ModelAndView(attributes, "home.ftl");
+			try {
+				attributes.put("utilisateurs", Database.query("from Utilisateur", Utilisateur.class));
+			} catch(IllegalArgumentException e) {
+				attributes.put("ERROR", "[Erreur] - Erreur lors du listage des utilisateurs");
+			}
+			
+			return new ModelAndView(attributes, "lister.ftl");
+		}, getFreeMarkerEngine());
+		
+		
+		/*
+		 * CREATE USER
+		 */
+		get("/creerUtilisateur", (request, response) -> {
+			logger.debug("start");
+			Map<String, Object> attributes = new HashMap<>();
+			return new ModelAndView(attributes, "creerUtilisateur.ftl");
 		}, getFreeMarkerEngine());
 
+		post("/validerCreationUtilisateur", (request, response) -> {
+			logger.debug("start");
+			Map<String, Object> attributes = new HashMap<>();
+			
+			Utilisateur utilisateur = new Utilisateur();
+			utilisateur.setEmail(request.queryParams("email"));
+			utilisateur.setPassword(request.queryParams("password"));
+			
+			Database.presist(utilisateur);
+			
+			attributes.put("messageValidation", "Utilisateur créé");
+			
+			return new ModelAndView(attributes, "validation.ftl");
+		}, getFreeMarkerEngine());
+		
+		
+		/*
+		 * UPDATE USER
+		 */
+		get("/modifierUtilisateur/:id", (request, response) -> {
+			logger.debug("start");
+			Map<String, Object> attributes = new HashMap<>();
+			System.out.println(request.params(":id"));
+			
+			try {
+				Utilisateur utilisateur = Database.find(Utilisateur.class, Integer.parseInt(request.params(":id")));
+				
+				attributes.put("utilisateur", utilisateur);
+				
+			} catch(IllegalArgumentException e) {
+				attributes.put("ERROR", "Utilisateur '" + request.params(":id") + "' introuvable.");
+			}
+			return new ModelAndView(attributes, "modifierUtilisateur.ftl");
+		}, getFreeMarkerEngine());
+
+		post("/validerModificationUtilisateur/:id", (request, response) -> {
+			logger.debug("start");
+			Map<String, Object> attributes = new HashMap<>();
+			System.out.println(request.params(":id"));
+			
+			try {
+				Utilisateur utilisateur = Database.find(Utilisateur.class, Integer.parseInt(request.params(":id")));
+
+				
+				Database.getEntity().getTransaction().begin();
+				utilisateur.setEmail(request.queryParams("email"));
+				utilisateur.setPassword(request.queryParams("password"));
+				Database.getEntity().getTransaction().commit();
+				
+				attributes.put("messageValidation", "Utilisateur modifié");
+				
+			} catch(IllegalArgumentException e) {
+				attributes.put("ERROR", "Utilisateur '" + request.params(":id") + "' introuvable." + e);
+			} 
+			return new ModelAndView(attributes, "validation.ftl");
+		}, getFreeMarkerEngine());
+		
+		
+		
+		get("/validerSupprimerUtilisateur/:id", (request, response) -> {
+			logger.debug("start");
+			Map<String, Object> attributes = new HashMap<>();
+			System.out.println(request.params(":id"));
+			
+			try {
+				Utilisateur utilisateur = Database.find(Utilisateur.class, Integer.parseInt(request.params(":id")));
+
+				
+				Database.getEntity().getTransaction().begin();
+				Database.getEntity().remove(utilisateur);
+				Database.getEntity().getTransaction().commit();
+				
+				attributes.put("messageValidation", "Utilisateur supprimé");
+				
+			} catch(IllegalArgumentException e) {
+				attributes.put("ERROR", "Utilisateur '" + request.params(":id") + "' introuvable." + e);
+			} 
+			return new ModelAndView(attributes, "validation.ftl");
+		}, getFreeMarkerEngine());
 	}
 
 	private FreeMarkerEngine getFreeMarkerEngine() {
