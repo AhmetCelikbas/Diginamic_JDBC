@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -25,6 +26,8 @@ public class Utilisateur {
 	private String email;
 	private String password;
 	
+	@OneToOne(mappedBy="utilisateur")
+	private Telephone telephone;
 	
 	/**
 	 * @return the idUser
