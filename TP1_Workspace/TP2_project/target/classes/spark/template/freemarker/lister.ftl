@@ -62,6 +62,7 @@
 				        <th>id</th>
 				        <th>email</th>
 				        <th>password</th>
+				        <th> </th>
 				      </tr>
 				    </thead>
 			   		<tbody>
@@ -70,6 +71,7 @@
 							   	<td>${utilisateur.idUser}</td>
 							   	<td>${utilisateur.email}</td>
 							   	<td>${utilisateur.password}</td>
+							   	<td width="100px"><a href="/validerSupprimerUtilisateur/${utilisateur.idUser}" class="btn btn-danger btn-sm">Supprimer</a></td>
 						   	<tr>
 						</#list>
 					</tbody>
