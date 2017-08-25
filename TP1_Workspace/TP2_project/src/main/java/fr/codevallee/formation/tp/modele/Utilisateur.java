@@ -3,10 +3,14 @@
  */
 package fr.codevallee.formation.tp.modele;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -26,8 +30,12 @@ public class Utilisateur {
 	private String email;
 	private String password;
 	
-	@OneToOne(mappedBy="utilisateur")
+	@OneToOne(mappedBy="utilisateur", cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	private Telephone telephone;
+	
+	
+	@ManyToMany(mappedBy="utilisateur")
+	private Set<VilleVisiste> villeVisiste;
 	
 	/**
 	 * @return the idUser

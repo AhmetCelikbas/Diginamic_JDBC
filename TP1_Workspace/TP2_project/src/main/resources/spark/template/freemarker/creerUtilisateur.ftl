@@ -63,7 +63,10 @@
 		    			<label for="exampleInputPassword1">Mot de passe</label>
 		    			<input type="password" name="password" class="form-control" required id="password" placeholder="Saisir le mot de passe">
 		  		</div>
-		    
+		    		<div class="form-group">
+		    			<label for="exampleInputPhone1">Téléphone</label>
+		    			<input type="phone" name="phone" class="form-control" required id="phone" placeholder="Saisir le numéro de téléphone">
+		  		</div>
 		   		<div class="form-group row">
 		      		<div class="col-sm-10">
 		      			<a  href="/" class="btn btn-secondary">Retour</a>

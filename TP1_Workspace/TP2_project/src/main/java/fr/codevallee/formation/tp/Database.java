@@ -65,8 +65,8 @@ public class Database {
 		}
 		entityManager.getTransaction().begin();
 		entityManager.persist(obj);
+		entityManager.flush();
 		entityManager.getTransaction().commit();
-		destroyEntity();
 	}
 	
 	public static void remove(Object obj) {
@@ -74,6 +74,7 @@ public class Database {
 			createEntity();
 		}
 		entityManager.getTransaction().begin();
+		entityManager.refresh(obj);
 		entityManager.remove(obj);
 		entityManager.getTransaction().commit();
 		destroyEntity();
