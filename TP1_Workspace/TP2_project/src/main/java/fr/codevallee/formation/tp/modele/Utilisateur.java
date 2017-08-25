@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,11 +31,11 @@ public class Utilisateur {
 	private String email;
 	private String password;
 	
-	@OneToOne(mappedBy="utilisateur", cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+	@OneToOne(fetch=FetchType.EAGER, mappedBy="utilisateur", cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	private Telephone telephone;
 	
 	
-	@ManyToMany(mappedBy="utilisateur")
+	@ManyToMany(fetch=FetchType.EAGER, mappedBy="utilisateur")
 	private Set<VilleVisiste> villeVisiste;
 	
 	/**
